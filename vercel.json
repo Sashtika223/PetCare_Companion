@@ -4,7 +4,7 @@
     "api/index.js": {
       "memory": 1024,
       "maxDuration": 30,
-      "includeFiles": "backend/dist/**,backend/node_modules/.prisma/**,backend/node_modules/@prisma/**,backend/node_modules/bcryptjs/**,backend/node_modules/jsonwebtoken/**,backend/node_modules/zod/**,backend/node_modules/cors/**,backend/node_modules/express/**,backend/node_modules/dotenv/**,backend/node_modules/node-cron/**,backend/prisma/**"
+      "includeFiles": "backend/dist/**,backend/node_modules/**,backend/prisma/**"
     }
   },
   "rewrites": [
