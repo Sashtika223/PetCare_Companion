@@ -1,7 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "bash build.sh",
-  "outputDirectory": "frontend/dist",
   "functions": {
     "api/index.js": {
       "memory": 1024,
