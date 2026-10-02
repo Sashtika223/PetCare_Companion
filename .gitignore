@@ -21,8 +21,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Prisma
-/backend/prisma/migrations/
+# Prisma (keep migrations committed for deployment)
 
 # OS / Editor files
 .DS_Store

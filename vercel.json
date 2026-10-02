@@ -1,15 +1,27 @@
 {
   "version": 2,
-  "installCommand": "npm install --prefix backend && cd backend && npx prisma generate && cd .. && npm install --prefix frontend",
-  "buildCommand": "cd backend && npm run build && cd ../frontend && npm run build",
+  "buildCommand": "cd backend && npm install && npm run build && cd ../frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "functions": {
-    "api/**/*.js": {
-      "includeFiles": "backend/dist/**,backend/node_modules/.prisma/**,backend/node_modules/@prisma/**"
+    "api/index.js": {
+      "memory": 1024,
+      "maxDuration": 30,
+      "includeFiles": "backend/dist/**,backend/node_modules/.prisma/**,backend/node_modules/@prisma/**,backend/node_modules/bcryptjs/**,backend/node_modules/jsonwebtoken/**,backend/node_modules/zod/**,backend/node_modules/cors/**,backend/prisma/**"
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/api/:path*", "destination": "/api/index.js" },
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,PATCH,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    }
   ]
 }
