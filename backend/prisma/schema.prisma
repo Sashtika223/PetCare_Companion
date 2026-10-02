@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(uuid())
+  fullName     String
+  email        String         @unique
+  password     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  pets         Pet[]
+  appointments Appointment[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Pet {
+  id           String        @id @default(uuid())
+  ownerId      String
+  owner        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name         String
+  species      String        // Dog, Cat, Bird, Rabbit, etc.
+  breed        String
+  dob          DateTime?
+  age          String?       // Calculated or custom text e.g. "3 years"
+  gender       String        // Male, Female, Neutered, Spayed
+  weight       Float?        // in kg
+  color        String?
+  profileImage String?
+  microchipId  String?
+  allergies    String?
+  medicalNotes String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  vaccinations Vaccination[]
+  medications  Medication[]
+  appointments Appointment[]
+  activities   Activity[]
+  notifications Notification[]
+
+  @@index([ownerId])
+  @@map("pets")
+}
+
+model Vaccination {
+  id              String   @id @default(uuid())
+  petId           String
+  pet             Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  vaccineName     String
+  vaccinationDate DateTime
+  nextDueDate     DateTime?
+  veterinarian    String?
+  notes           String?
+  status          String   @default("Up to Date") // Up to Date, Due Soon, Overdue
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([petId])
+  @@map("vaccinations")
+}
+
+model Medication {
+  id           String    @id @default(uuid())
+  petId        String
+  pet          Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
+  medicineName String
+  dosage       String
+  frequency    String    // Once daily, Twice daily, Three times daily, Weekly, Custom
+  startDate    DateTime
+  endDate      DateTime?
+  instructions String?
+  prescribedBy String?
+  status       String    @default("Active") // Active, Completed, Discontinued
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([petId])
+  @@map("medications")
+}
+
+model Appointment {
+  id               String   @id @default(uuid())
+  petId            String
+  pet              Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  ownerId          String
+  owner            User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  veterinarianName String
+  clinicName       String?
+  appointmentDate  DateTime
+  appointmentTime  String   // HH:mm format e.g. "10:30 AM"
+  reason           String
+  notes            String?
+  status           String   @default("Scheduled") // Scheduled, Completed, Cancelled, Rescheduled
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([petId])
+  @@index([ownerId])
+  @@map("appointments")
+}
+
+model Activity {
+  id           String   @id @default(uuid())
+  petId        String
+  pet          Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  activityType String   // Walking, Feeding, Playing, Sleeping, Exercise, Grooming, Bathing, Training, Other
+  activityDate DateTime @default(now())
+  activityTime String?  // HH:mm format
+  duration     Int?     // Duration in minutes
+  quantity     String?  // e.g. "2 cups", "5 km"
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  @@index([petId])
+  @@map("activities")
+}
+
+model CareTip {
+  id                 String   @id @default(uuid())
+  title              String
+  category           String   // Nutrition, Grooming, Exercise, Hygiene, Vaccination, Medication, Training, General Health, Safety
+  shortDescription   String
+  detailedContent    String   @db.Text
+  recommendedSpecies String   @default("All") // Dog, Cat, All, etc.
+  tags               String[]
+  image              String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([category])
+  @@map("care_tips")
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  petId       String?
+  pet         Pet?     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  type        String   // Vaccination, Medication, Appointment, Activity, General
+  title       String
+  message     String
+  scheduledAt DateTime @default(now())
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([petId])
+  @@map("notifications")
+}
